@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#12121a">
+<title>파티 퀴즈</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="img/app/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <button id="btn-home" class="icon-btn" hidden>← 홈</button>
+  <h1 id="screen-title">파티 퀴즈</h1>
+  <button id="btn-full" class="icon-btn">전체화면</button>
+</header>
+
+<main id="main">
+
+  <!-- ================================================================ 홈 -->
+  <section class="screen" data-screen="home">
+    <div class="cards">
+      <button class="game-card lol" data-go="lol">
+        <span class="emoji">🎮</span>
+        <span class="t">롤 픽 소리 맞추기</span>
+        <span class="d">챔피언 선택 음성 듣고 이름 맞히기</span>
+        <span class="n" id="home-lol-n"></span>
+      </button>
+      <button class="game-card song" data-go="song">
+        <span class="emoji">🎵</span>
+        <span class="t">노래 맞추기</span>
+        <span class="d">2000년대 · 2010년대 히트곡</span>
+        <span class="n" id="home-song-n"></span>
+      </button>
+      <button class="game-card person" data-go="person">
+        <span class="emoji">🧑</span>
+        <span class="t">인물 사진 퀴즈</span>
+        <span class="d">사진 보고 누군지 맞히기</span>
+        <span class="n" id="home-person-n"></span>
+      </button>
+    </div>
+
+    <div class="panel">
+      <h2>팀</h2>
+      <div id="team-editor" class="team-editor"></div>
+      <div class="row">
+        <button id="team-add" class="ghost">+ 팀 추가</button>
+        <button id="team-reset" class="ghost danger">점수 초기화</button>
+      </div>
+      <p class="hint">팀 이름을 눌러 바꿀 수 있어요. 점수는 게임을 옮겨 다녀도, 새로고침해도 유지됩니다.</p>
+    </div>
+
+    <p class="foot">
+      <a href="credits.html">인물 사진 출처</a>
+      · 노트북 단축키: <b>스페이스</b> 재생/정답 · <b>→</b> 다음 · <b>1~4</b> 팀 점수
+    </p>
+  </section>
+
+  <!-- ============================================================== 롤 -->
+  <section class="screen" data-screen="lol" hidden>
+    <div data-phase="setup">
+      <div class="panel">
+        <div class="opt-row">
+          <span class="opt-label">모드</span>
+          <div class="seg" id="lol-mode">
+            <button data-v="open" class="on">주관식</button>
+            <button data-v="choice">4지선다</button>
+          </div>
+        </div>
+        <div class="opt-row">
+          <span class="opt-label">범위</span>
+          <div class="seg" id="lol-pool">
+            <button data-v="popular" class="on">인기 챔피언</button>
+            <button data-v="all">전체</button>
+          </div>
+        </div>
+        <p class="hint" id="lol-count"></p>
+      </div>
+      <button class="primary big" id="lol-start">시작하기</button>
+    </div>
+
+    <div data-phase="play" hidden>
+      <div class="qhead"><span id="lol-progress"></span></div>
+
+      <button class="play-btn" id="lol-play"><span class="ico">▶</span><span id="lol-play-label">픽 소리 듣기</span></button>
+
+      <div class="choices" id="lol-choices" hidden></div>
+
+      <div class="answer" id="lol-answer" hidden>
+        <img id="lol-img" alt="">
+        <div class="ko" id="lol-ko"></div>
+        <div class="en" id="lol-en"></div>
+      </div>
+
+      <div class="actions">
+        <button id="lol-reveal" class="primary">정답 공개</button>
+        <button id="lol-next" class="primary" hidden>다음 문제 →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ 노래 -->
+  <section class="screen" data-screen="song" hidden>
+    <div data-phase="setup">
+      <div class="panel">
+        <div class="opt-row">
+          <span class="opt-label">연대</span>
+          <div class="seg" id="song-decade">
+            <button data-v="all" class="on">전체</button>
+            <button data-v="2000s">2000년대</button>
+            <button data-v="2010s">2010년대</button>
+          </div>
+        </div>
+        <div class="opt-row">
+          <span class="opt-label">들려줄 시간</span>
+          <div class="seg" id="song-dur">
+            <button data-v="3">3초</button>
+            <button data-v="5" class="on">5초</button>
+            <button data-v="10">10초</button>
+          </div>
+        </div>
+        <p class="hint" id="song-count"></p>
+        <p class="hint warn" id="song-net" hidden>노래 퀴즈는 미리듣기를 스트리밍해서 인터넷 연결이 필요합니다.</p>
+      </div>
+      <button class="primary big" id="song-start">시작하기</button>
+    </div>
+
+    <div data-phase="play" hidden>
+      <div class="qhead"><span id="song-progress"></span></div>
+
+      <div class="song-visual" id="song-cover">
+        <div class="bars"><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="yt-state" id="song-state">준비됨</div>
+      </div>
+
+      <button class="play-btn" id="song-play"><span class="ico">▶</span><span id="song-play-label">노래 듣기</span></button>
+
+      <div class="answer" id="song-answer" hidden>
+        <img id="song-art" alt="" hidden>
+        <div class="ko" id="song-title"></div>
+        <div class="en" id="song-artist"></div>
+      </div>
+
+      <div class="actions">
+        <button id="song-more" class="ghost">+5초 더</button>
+        <button id="song-reveal" class="primary">정답 공개</button>
+        <button id="song-listen" class="ghost" hidden>이어 듣기</button>
+        <button id="song-next" class="primary" hidden>다음 문제 →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ 인물 -->
+  <section class="screen" data-screen="person" hidden>
+    <div data-phase="setup">
+      <div class="panel">
+        <div class="opt-row col">
+          <span class="opt-label">분야</span>
+          <div class="chips" id="person-cats"></div>
+        </div>
+        <p class="hint" id="person-count"></p>
+      </div>
+      <button class="primary big" id="person-start">시작하기</button>
+    </div>
+
+    <div data-phase="play" hidden>
+      <div class="qhead"><span id="person-progress"></span></div>
+
+      <div class="photo-wrap">
+        <img id="person-img" alt="누구일까요?">
+      </div>
+
+      <div class="answer" id="person-answer" hidden>
+        <div class="ko" id="person-name"></div>
+        <div class="en" id="person-desc"></div>
+      </div>
+
+      <div class="actions">
+        <button id="person-hint" class="ghost">힌트</button>
+        <button id="person-reveal" class="primary">정답 공개</button>
+        <button id="person-next" class="primary" hidden>다음 문제 →</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer id="scoreboard" class="scoreboard"></footer>
+<div id="toast" class="toast" hidden></div>
+
+<!-- 데이터: fetch 가 아니라 script 로 실어서 file:// 로 열어도 로드된다 -->
+<script src="data/champions.js"></script>
+<script src="data/songs.js"></script>
+<script src="data/people.js"></script>
+
+<script src="js/app.js"></script>
+<script src="js/lol.js"></script>
+<script src="js/song.js"></script>
+<script src="js/person.js"></script>
+<script>
+App.boot();
+// 웹으로 열었을 때만 서비스워커 등록 (APK 의 file:// 에서는 지원되지 않음)
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('sw.js').catch(function () { /* 무시 */ });
+  });
+}
+</script>
+</body>
+</html>

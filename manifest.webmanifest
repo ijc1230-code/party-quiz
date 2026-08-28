@@ -1,0 +1,16 @@
+{
+  "name": "파티 퀴즈",
+  "short_name": "파티 퀴즈",
+  "description": "롤 픽 소리 · 노래 · 인물 사진 맞추기",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#0f0f16",
+  "theme_color": "#0f0f16",
+  "icons": [
+    { "src": "img/app/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "img/app/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "img/app/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
