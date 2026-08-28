@@ -86,7 +86,8 @@ main {
   gap: 12px;
   grid-template-columns: 1fr;
 }
-@media (min-width: 720px) { .cards { grid-template-columns: repeat(3, 1fr); } }
+/* 게임이 4개라 2x2 로 배치한다 (3열이면 마지막 칸이 비어 어색하다) */
+@media (min-width: 560px) { .cards { grid-template-columns: repeat(2, 1fr); } }
 
 .game-card {
   display: flex;
@@ -111,6 +112,7 @@ main {
 .game-card.lol { border-color: #2b4a5e; }
 .game-card.song { border-color: #5e2b4a; }
 .game-card.person { border-color: #2b3f5e; }
+.game-card.flag { border-color: #2b5e3f; }
 .game-card.off { opacity: 0.45; }
 
 /* ---------------------------------------------------------- 설정 패널 */
@@ -257,6 +259,27 @@ button:disabled { opacity: 0.4; cursor: default; }
   max-height: min(56vh, 520px);
   object-fit: contain;
   display: block;
+}
+
+/* 국기 — 흰 바탕 국기(일본·대한민국 등)가 어두운 배경에 묻히지 않게
+   밝은 판 위에 올리고 테두리를 준다 */
+.flag-wrap {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: #f3f3f7;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+}
+.flag-wrap img {
+  max-width: 100%;
+  max-height: min(42vh, 380px);
+  object-fit: contain;
+  display: block;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
 }
 
 /* 노래 재생 표시 (앨범 커버 대신 이퀄라이저) */

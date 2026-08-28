@@ -198,6 +198,7 @@ const App = (() => {
       ['#home-lol-n', '.game-card.lol', window.CHAMPIONS, '챔피언'],
       ['#home-song-n', '.game-card.song', window.SONGS, '곡'],
       ['#home-person-n', '.game-card.person', window.PEOPLE, '명'],
+      ['#home-flag-n', '.game-card.flag', window.FLAGS, '개국'],
     ];
     for (const [nSel, cardSel, data, unit] of counts) {
       const n = Array.isArray(data) ? data.length : 0;

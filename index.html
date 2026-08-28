@@ -42,6 +42,12 @@
         <span class="d">사진 보고 누군지 맞히기</span>
         <span class="n" id="home-person-n"></span>
       </button>
+      <button class="game-card flag" data-go="flag">
+        <span class="emoji">🏳️</span>
+        <span class="t">국기 맞추기</span>
+        <span class="d">국기 보고 나라 이름 맞히기</span>
+        <span class="n" id="home-flag-n"></span>
+      </button>
     </div>
 
     <div class="panel">
@@ -187,6 +193,50 @@
     </div>
   </section>
 
+  <!-- ============================================================ 국기 -->
+  <section class="screen" data-screen="flag" hidden>
+    <div data-phase="setup">
+      <div class="panel">
+        <div class="opt-row">
+          <span class="opt-label">모드</span>
+          <div class="seg" id="flag-mode">
+            <button data-v="open" class="on">주관식</button>
+            <button data-v="choice">4지선다</button>
+          </div>
+        </div>
+        <div class="opt-row">
+          <span class="opt-label">난이도</span>
+          <div class="seg" id="flag-tier">
+            <button data-v="easy" class="on">잘 아는 나라</button>
+            <button data-v="all">전체</button>
+          </div>
+        </div>
+        <p class="hint" id="flag-count"></p>
+      </div>
+      <button class="primary big" id="flag-start">시작하기</button>
+    </div>
+
+    <div data-phase="play" hidden>
+      <div class="qhead"><span id="flag-progress"></span></div>
+
+      <div class="flag-wrap">
+        <img id="flag-img" alt="어느 나라 국기일까요?">
+      </div>
+
+      <div class="choices" id="flag-choices" hidden></div>
+
+      <div class="answer" id="flag-answer" hidden>
+        <div class="ko" id="flag-ko"></div>
+        <div class="en" id="flag-region"></div>
+      </div>
+
+      <div class="actions">
+        <button id="flag-reveal" class="primary">정답 공개</button>
+        <button id="flag-next" class="primary" hidden>다음 문제 →</button>
+      </div>
+    </div>
+  </section>
+
 </main>
 
 <footer id="scoreboard" class="scoreboard"></footer>
@@ -196,11 +246,13 @@
 <script src="data/champions.js"></script>
 <script src="data/songs.js"></script>
 <script src="data/people.js"></script>
+<script src="data/flags.js"></script>
 
 <script src="js/app.js"></script>
 <script src="js/lol.js"></script>
 <script src="js/song.js"></script>
 <script src="js/person.js"></script>
+<script src="js/flag.js"></script>
 <script>
 App.boot();
 // 웹으로 열었을 때만 서비스워커 등록 (APK 의 file:// 에서는 지원되지 않음)
