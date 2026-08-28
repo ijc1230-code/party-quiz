@@ -8,12 +8,12 @@
 개인 GitHub 계정으로 로그인한 뒤:
 
 ```bash
-gh auth login                       # 개인 계정 선택
+gh auth login   # 개인 계정 (ijc1230-code)
 gh repo create party-quiz --public --source=. --push
-gh api -X POST repos/:owner/party-quiz/pages -f "source[branch]=main" -f "source[path]=/"
+gh api -X POST repos/ijc1230-code/party-quiz/pages -f "source[branch]=main" -f "source[path]=/"
 ```
 
-몇 분 뒤 `https://<계정>.github.io/party-quiz/` 에서 열린다.
+배포됨: **https://ijc1230-code.github.io/party-quiz/**
 
 ## 태블릿에서 쓰기
 
@@ -41,8 +41,11 @@ git add -A && git commit -m "update" && git push
 태블릿에서 한 번 실행해 롤 퀴즈를 몇 문제 풀어 본 뒤 → **비행기 모드** → 새로고침 →
 그 문제들이 다시 나올 때 소리가 나면 캐시가 동작하는 것이다.
 
-> 서비스워커는 개발용 미리보기 브라우저가 차단해서 **아직 실제 검증을 못 했다.**
-> 등록에 실패해도 게임 자체는 정상 동작한다(온라인 기준).
+> 검증됨: 배포된 https 사이트에서 서비스워커가 활성화되고, 롤 픽 음성이 캐시되어
+> 캐시본만으로 재생되는 것까지 확인했다 (200 / audio/ogg / 24KB).
+>
+> 다만 **미리 다 받는 게 아니라 실제로 나온 문제만** 캐시된다. 비행기 모드에서
+> 처음 보는 챔피언은 소리가 안 난다.
 
 ## 파일
 
