@@ -51,7 +51,7 @@
       <button class="game-card career" data-go="career">
         <span class="emoji">⚽</span>
         <span class="t">축구 소속팀 맞추기</span>
-        <span class="d">거쳐 간 팀 보고 선수 맞히기</span>
+        <span class="d">거쳐 간 팀 로고 보고 선수 맞히기</span>
         <span class="n" id="home-career-n"></span>
       </button>
     </div>
@@ -255,6 +255,13 @@
           </div>
         </div>
         <div class="opt-row">
+          <span class="opt-label">팀 이름</span>
+          <div class="seg" id="career-names">
+            <button data-v="off" class="on">숨기기</button>
+            <button data-v="on">보이기</button>
+          </div>
+        </div>
+        <div class="opt-row">
           <span class="opt-label">연도</span>
           <div class="seg" id="career-years">
             <button data-v="on" class="on">보이기</button>
@@ -262,7 +269,7 @@
           </div>
         </div>
         <p class="hint" id="career-count"></p>
-        <p class="hint">첫 팀만 보고 맞히면 잘한 겁니다. 어려우면 팀을 하나씩 더 펼치세요. 유스·임대·2군은 뺐습니다.</p>
+        <p class="hint">거쳐 간 팀 로고를 순서대로 한 번에 보여 줍니다. 유스·임대·2군은 뺐습니다.</p>
       </div>
       <button class="primary big" id="career-start">시작하기</button>
     </div>
@@ -270,7 +277,7 @@
     <div data-phase="play" hidden>
       <div class="qhead"><span id="career-progress"></span></div>
 
-      <div class="career-chain" id="career-chain"></div>
+      <div class="club-grid" id="career-chain"></div>
 
       <div class="answer" id="career-answer" hidden>
         <img id="career-img" alt="">
@@ -279,7 +286,6 @@
       </div>
 
       <div class="actions">
-        <button id="career-more" class="ghost">팀 하나 더</button>
         <button id="career-reveal" class="primary">정답 공개</button>
         <button id="career-next" class="primary" hidden>다음 문제 →</button>
       </div>

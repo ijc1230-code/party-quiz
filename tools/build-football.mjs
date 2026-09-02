@@ -1,11 +1,13 @@
 // 축구 퀴즈 데이터 수집기
 //   node tools/build-football.mjs                     전체 수집
 //   node tools/build-football.mjs --candidates "이름"  사진 후보만 보기
-//   node tools/build-football.mjs --no-photo          커리어만 다시 만들기(사진 건너뜀)
+//   node tools/build-football.mjs --no-photo          커리어만 다시 만들기(사진·엠블럼 건너뜀)
+//   node tools/build-football.mjs --refresh           이미 받은 사진·엠블럼도 새로 받기
 //
 // tools/football-roster.json 을 읽어서
 //   data/football.js   선수 + 커리어
-//   data/clubs.js      클럽 한국어 이름 · 배지 색
+//   data/clubs.js      클럽 한국어 이름 · 엠블럼 경로 · 팀 색
+//   img/club/*.png     클럽 엠블럼
 //   img/football/*.jpg 선수 사진
 //   credits.html       사진 출처 표(축구 부분)
 // 을 만든다.
@@ -22,10 +24,25 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..');
 const CACHE_DIR = path.join(HERE, '.cache');
 const IMG_DIR = path.join(ROOT, 'img', 'football');
+const LOGO_DIR = path.join(ROOT, 'img', 'club');
 const UA = 'party-quiz-builder/1.0 (personal quiz project; https://ijc1230-code.github.io/party-quiz/)';  // 헤더는 ASCII 만 가능
 
 const args = process.argv.slice(2);
 const NO_PHOTO = args.includes('--no-photo');
+const REFRESH = args.includes('--refresh');
+
+// 이미 받아 둔 사진·엠블럼은 다시 받지 않는다 (--refresh 로 강제)
+// 사진은 출처 파일이 바뀌었으면(명단의 photo 를 고쳤으면) 자동으로 다시 받는다.
+function loadPrevious() {
+  const file = path.join(ROOT, 'data', 'football.js');
+  if (!fs.existsSync(file)) return new Map();
+  try {
+    const box = {};
+    new Function('window', fs.readFileSync(file, 'utf8'))(box);
+    return new Map((box.FOOTBALL || []).map((p) => [p.ko, p]));
+  } catch { return new Map(); }
+}
+const previous = loadPrevious();
 
 /* ------------------------------------------------------------ 요청 (캐시 + 간격) */
 let lastAt = 0;
@@ -139,9 +156,9 @@ function seniorCareer(fields) {
   return out;
 }
 
-/* --------------------------------------------------------------- 클럽 배지 색 */
-// 유명 클럽만 손으로 넣는다. 없는 팀은 이름 해시로 색을 만든다(배지는 장식이고
-// 팀 이름이 카드에 같이 적히므로, 정확한 유니폼 색일 필요는 없다).
+/* --------------------------------------------------------------- 클럽 색·약칭 */
+// 화면에는 실제 엠블럼을 쓰고, 이 표는 엠블럼을 못 구한 팀(위키 문서가 없는 옛 팀)의
+// 이니셜 배지에만 쓴다. 표에 없는 팀은 이름 해시로 색을 만든다.
 const CLUB_STYLE = {
   'Manchester United F.C.':      ['#DA291C', '#FBE122', 'MUN'],
   'Manchester City F.C.':        ['#6CABDD', '#1C2C5B', 'MCI'],
@@ -303,6 +320,48 @@ async function koTitles(titles) {
   return { ko: map, canon };
 }
 
+// 클럽 엠블럼 파일 이름 — {{Infobox football club}} 의 image/logo 칸
+// (pageimages 는 비자유 파일을 빼고 주기 때문에 토트넘·맨유 같은 팀이 통째로 빠진다)
+async function clubLogoFile(title) {
+  const d = await api('en.wikipedia.org', { action: 'parse', prop: 'wikitext', page: title, redirects: '1' });
+  const wt = d.parse?.wikitext || '';
+  const start = wt.search(/\{\{\s*Infobox football club/i);
+  const box = start < 0 ? wt.slice(0, 2000) : wt.slice(start, start + 2000);
+
+  // 파일명이 %C3%A9 처럼 인코딩돼 적힌 문서가 있다 (Argentinos Juniors 등)
+  const unpct = (s2) => { try { return decodeURIComponent(s2); } catch { return s2; } };
+  for (const key of ['image', 'logo', 'crest']) {
+    const line = box.split('\n').find((l) => new RegExp('^\\s*\\|\\s*' + key + '\\s*=', 'i').test(l));
+    if (!line) continue;
+    // '[[File:X.svg|frameless]]' 도 있고 'X.svg' 만 적힌 것도 있다
+    const linked = line.match(/File\s*:\s*([^|\]}]+)/i);
+    if (linked) return 'File:' + unpct(linked[1].trim());
+    const bare = clean(line.slice(line.indexOf('=') + 1)).match(/^([^|\]}<]+\.(?:svg|png|jpe?g|gif))/i);
+    if (bare) return 'File:' + unpct(bare[1].trim());
+  }
+  const name = (await api('en.wikipedia.org', {
+    action: 'query', prop: 'pageimages', piprop: 'name', titles: title, redirects: '1',
+  })).query?.pages?.[0]?.pageimage;
+  return name ? 'File:' + name : null;
+}
+
+// 엠블럼은 영문 위키에 올라온 파일도 쓴다 (공용에 없는 팀이 절반쯤 된다)
+async function enImageInfo(fileTitle, width = 250) {
+  const d = await api('en.wikipedia.org', {
+    action: 'query', prop: 'imageinfo', titles: fileTitle,
+    iiprop: 'url|extmetadata', iiurlwidth: String(width),
+  });
+  const page = d.query?.pages?.[0];
+  const ii = page?.imageinfo?.[0];
+  if (!ii) return null;
+  return { url: (ii.thumburl || ii.url).split('?')[0], page: ii.descriptionurl };
+}
+
+function slug(title) {
+  return title.normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-|-$/g, '').toLowerCase().slice(0, 48) || 'club';
+}
+
 // 선수 대표 사진 파일 이름
 async function leadFile(title) {
   const d = await api('en.wikipedia.org', {
@@ -417,6 +476,40 @@ for (const t of clubTitles) {
   if (!name) problems.push('클럽 한국어 이름 없음: ' + t);
 }
 
+/* 클럽 엠블럼 */
+if (!NO_PHOTO) {
+  fs.mkdirSync(LOGO_DIR, { recursive: true });
+  console.log('엠블럼 ' + clubTitles.length + '개 내려받기');
+  let got = 0;
+  for (const t of clubTitles) {
+    try {
+      const file = await clubLogoFile(t);
+      if (!file) { problems.push('엠블럼 없음: ' + t); continue; }
+      const info = await enImageInfo(file);
+      if (!info) { problems.push('엠블럼 파일을 못 찾음: ' + t + ' — ' + file); continue; }
+
+      const name = slug(t) + '.png';                 // svg 썸네일도 png 로 온다
+      const dest = path.join(LOGO_DIR, name);
+      if (REFRESH || !fs.existsSync(dest)) {
+        const buf = Buffer.from(await (await politeFetch(info.url)).arrayBuffer());
+        fs.writeFileSync(dest, buf);
+        process.stdout.write('.');
+      }
+      CLUBS[t].logo = 'img/club/' + name;
+      got++;
+    } catch (e) {
+      problems.push('엠블럼 실패: ' + t + ' — ' + e.message);
+    }
+  }
+  console.log('\n  -> ' + got + '/' + clubTitles.length + '개');
+} else {
+  // --no-photo 로 돌릴 때는 이미 받아 둔 엠블럼을 그대로 쓴다
+  for (const t of clubTitles) {
+    const name = slug(t) + '.png';
+    if (fs.existsSync(path.join(LOGO_DIR, name))) CLUBS[t].logo = 'img/club/' + name;
+  }
+}
+
 /* 사진 */
 fs.mkdirSync(IMG_DIR, { recursive: true });
 const credits = [];
@@ -440,9 +533,14 @@ for (let i = 0; i < players.length; i++) {
   if (!info) { problems.push(p.ko + ': 커먼즈에 없는 파일 — ' + fileTitle); continue; }
 
   const ext = (info.url.match(/\.(jpe?g|png)(?:[?#]|$)/i) || [, 'jpg'])[1].toLowerCase().replace('jpeg', 'jpg');
+  const dest = path.join(IMG_DIR, 'f' + i + '.' + ext);
+  const prev = previous.get(p.ko);
+  const same = !REFRESH && prev && prev.credit === info.page && fs.existsSync(dest);
   try {
-    const buf = Buffer.from(await (await politeFetch(info.url)).arrayBuffer());
-    fs.writeFileSync(path.join(IMG_DIR, 'f' + i + '.' + ext), buf);
+    if (!same) {
+      const buf = Buffer.from(await (await politeFetch(info.url)).arrayBuffer());
+      fs.writeFileSync(dest, buf);
+    }
     p.img = 'img/football/f' + i + '.' + ext;
   } catch (e) {
     problems.push(p.ko + ': 사진 내려받기 실패 — ' + e.message);
@@ -486,8 +584,10 @@ const rows = credits.map((c) => '    <tr><td>' + c.ko + '</td>'
   + '</td></tr>').join('\n');
 
 const block = CREDIT_START + '\n'
-  + '<h1 id="football">축구선수 사진 출처</h1>\n'
-  + '<p>축구 퀴즈(사진·소속팀)에 쓰인 사진은 모두 위키미디어 공용에서 가져왔습니다. 저작자와 라이선스는 아래 파일 링크의 설명 페이지에 있습니다.</p>\n'
+  + '<h1 id="football">축구 퀴즈 사진·엠블럼 출처</h1>\n'
+  + '<p>선수 사진은 모두 위키미디어 공용에서 가져왔습니다. 저작자와 라이선스는 아래 파일 링크의 설명 페이지에 있습니다.</p>\n'
+  + '<p>소속팀 퀴즈의 클럽 엠블럼은 위키백과 각 구단 문서에 실린 엠블럼 파일입니다. '
+  + '엠블럼은 해당 구단의 상표이며, 이 페이지는 비영리 개인용 퀴즈로만 씁니다.</p>\n'
   + '<table><thead><tr><th>선수</th><th>문서</th><th>사진 파일</th></tr></thead>\n<tbody>\n'
   + rows + '\n</tbody></table>\n' + CREDIT_END;
 

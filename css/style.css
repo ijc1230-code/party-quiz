@@ -283,66 +283,71 @@ button:disabled { opacity: 0.4; cursor: default; }
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
 }
 
-/* 축구 소속팀 — 거쳐 간 팀을 위에서 아래로 */
-.career-chain {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+/* 축구 소속팀 — 거쳐 간 팀 로고를 순서대로 한 판에 */
+.club-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(104px, 1fr));
+  gap: 10px;
   margin: 4px 0;
 }
-.career-club {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+@media (min-width: 700px) {
+  .club-grid { grid-template-columns: repeat(auto-fit, minmax(128px, 1fr)); }
+}
+.club-tile {
+  position: relative;
   background: var(--bg2);
   border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 10px 14px;
+  border-radius: 16px;
+  padding: 12px 8px 10px;
+  text-align: center;
 }
-.career-club .badge {
-  flex: 0 0 auto;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  border: 3px solid var(--line);
+.club-tile .order {
+  position: absolute;
+  top: 6px;
+  left: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--dim);
+  font-variant-numeric: tabular-nums;
+}
+/* 엠블럼은 대개 어두운 색이라 흰 판 위에 올린다 */
+.club-tile .crest {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  max-height: 96px;
+  background: #f4f4f8;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
+  padding: 8px;
+  margin-bottom: 8px;
+}
+.club-tile .crest img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  display: block;
+}
+/* 로고를 못 구한 팀은 같은 흰 판에 이니셜만 */
+.club-tile .crest.nologo {
+  font-size: 22px;
   font-weight: 800;
   letter-spacing: -0.03em;
 }
-.career-club .cname {
-  flex: 1;
-  font-size: 17px;
+.club-tile .cname {
+  font-size: 14px;
   font-weight: 700;
   letter-spacing: -0.02em;
+  line-height: 1.25;
+  min-height: 1.25em;
 }
-.career-club .cyear {
-  font-size: 13px;
+.club-tile .cyear {
+  font-size: 12px;
   color: var(--dim);
   font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-}
-.career-arrow {
-  text-align: center;
-  color: var(--dim);
-  font-size: 13px;
-  line-height: 1;
-}
-.career-rest {
-  border: 1px dashed var(--line);
-  border-radius: 14px;
-  padding: 12px;
-  text-align: center;
-  color: var(--dim);
-  font-size: 13px;
-}
-/* 새로 펼쳐진 팀만 살짝 튀어나오게 */
-.career-club.fresh { animation: cardpop 0.22s ease; }
-@keyframes cardpop {
-  from { transform: translateY(-6px); opacity: 0; }
-  to { transform: none; opacity: 1; }
+  margin-top: 2px;
+  min-height: 1em;
 }
 
 /* 노래 재생 표시 (앨범 커버 대신 이퀄라이저) */
