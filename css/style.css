@@ -113,6 +113,7 @@ main {
 .game-card.song { border-color: #5e2b4a; }
 .game-card.person { border-color: #2b3f5e; }
 .game-card.flag { border-color: #2b5e3f; }
+.game-card.career { border-color: #5e4a2b; }
 .game-card.off { opacity: 0.45; }
 
 /* ---------------------------------------------------------- 설정 패널 */
@@ -280,6 +281,68 @@ button:disabled { opacity: 0.4; cursor: default; }
   display: block;
   border: 1px solid rgba(0, 0, 0, 0.18);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+
+/* 축구 소속팀 — 거쳐 간 팀을 위에서 아래로 */
+.career-chain {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 4px 0;
+}
+.career-club {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 10px 14px;
+}
+.career-club .badge {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 3px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+.career-club .cname {
+  flex: 1;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.career-club .cyear {
+  font-size: 13px;
+  color: var(--dim);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.career-arrow {
+  text-align: center;
+  color: var(--dim);
+  font-size: 13px;
+  line-height: 1;
+}
+.career-rest {
+  border: 1px dashed var(--line);
+  border-radius: 14px;
+  padding: 12px;
+  text-align: center;
+  color: var(--dim);
+  font-size: 13px;
+}
+/* 새로 펼쳐진 팀만 살짝 튀어나오게 */
+.career-club.fresh { animation: cardpop 0.22s ease; }
+@keyframes cardpop {
+  from { transform: translateY(-6px); opacity: 0; }
+  to { transform: none; opacity: 1; }
 }
 
 /* 노래 재생 표시 (앨범 커버 대신 이퀄라이저) */

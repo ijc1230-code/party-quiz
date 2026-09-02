@@ -48,6 +48,12 @@
         <span class="d">국기 보고 나라 이름 맞히기</span>
         <span class="n" id="home-flag-n"></span>
       </button>
+      <button class="game-card career" data-go="career">
+        <span class="emoji">⚽</span>
+        <span class="t">축구 소속팀 맞추기</span>
+        <span class="d">거쳐 간 팀 보고 선수 맞히기</span>
+        <span class="n" id="home-career-n"></span>
+      </button>
     </div>
 
     <div class="panel">
@@ -61,7 +67,7 @@
     </div>
 
     <p class="foot">
-      <a href="credits.html">인물 사진 출처</a>
+      <a href="credits.html">사진 출처</a>
       · 노트북 단축키: <b>스페이스</b> 재생/정답 · <b>→</b> 다음 · <b>1~4</b> 팀 점수
     </p>
   </section>
@@ -237,6 +243,49 @@
     </div>
   </section>
 
+  <!-- ==================================================== 축구 소속팀 -->
+  <section class="screen" data-screen="career" hidden>
+    <div data-phase="setup">
+      <div class="panel">
+        <div class="opt-row">
+          <span class="opt-label">난이도</span>
+          <div class="seg" id="career-tier">
+            <button data-v="famous" class="on">유명한 선수</button>
+            <button data-v="all">전체</button>
+          </div>
+        </div>
+        <div class="opt-row">
+          <span class="opt-label">연도</span>
+          <div class="seg" id="career-years">
+            <button data-v="on" class="on">보이기</button>
+            <button data-v="off">숨기기</button>
+          </div>
+        </div>
+        <p class="hint" id="career-count"></p>
+        <p class="hint">첫 팀만 보고 맞히면 잘한 겁니다. 어려우면 팀을 하나씩 더 펼치세요. 유스·임대·2군은 뺐습니다.</p>
+      </div>
+      <button class="primary big" id="career-start">시작하기</button>
+    </div>
+
+    <div data-phase="play" hidden>
+      <div class="qhead"><span id="career-progress"></span></div>
+
+      <div class="career-chain" id="career-chain"></div>
+
+      <div class="answer" id="career-answer" hidden>
+        <img id="career-img" alt="">
+        <div class="ko" id="career-name"></div>
+        <div class="en" id="career-desc"></div>
+      </div>
+
+      <div class="actions">
+        <button id="career-more" class="ghost">팀 하나 더</button>
+        <button id="career-reveal" class="primary">정답 공개</button>
+        <button id="career-next" class="primary" hidden>다음 문제 →</button>
+      </div>
+    </div>
+  </section>
+
 </main>
 
 <footer id="scoreboard" class="scoreboard"></footer>
@@ -247,12 +296,15 @@
 <script src="data/songs.js"></script>
 <script src="data/people.js"></script>
 <script src="data/flags.js"></script>
+<script src="data/football.js"></script>
+<script src="data/clubs.js"></script>
 
 <script src="js/app.js"></script>
 <script src="js/lol.js"></script>
 <script src="js/song.js"></script>
 <script src="js/person.js"></script>
 <script src="js/flag.js"></script>
+<script src="js/career.js"></script>
 <script>
 App.boot();
 // 웹으로 열었을 때만 서비스워커 등록 (APK 의 file:// 에서는 지원되지 않음)

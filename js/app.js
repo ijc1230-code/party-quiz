@@ -194,14 +194,16 @@ const App = (() => {
     document.addEventListener('keydown', onKeyDown);
 
     // 홈 카드에 보유 문제 수 표시 (데이터가 없으면 비활성)
+    // 게임이 pool() 을 알려 주면 그걸 쓴다 — 인물 퀴즈처럼 데이터를 여럿 합쳐 쓰는 경우가 있다
     const counts = [
-      ['#home-lol-n', '.game-card.lol', window.CHAMPIONS, '챔피언'],
-      ['#home-song-n', '.game-card.song', window.SONGS, '곡'],
-      ['#home-person-n', '.game-card.person', window.PEOPLE, '명'],
-      ['#home-flag-n', '.game-card.flag', window.FLAGS, '개국'],
+      ['#home-lol-n', '.game-card.lol', 'lol', window.CHAMPIONS, '챔피언'],
+      ['#home-song-n', '.game-card.song', 'song', window.SONGS, '곡'],
+      ['#home-person-n', '.game-card.person', 'person', window.PEOPLE, '명'],
+      ['#home-flag-n', '.game-card.flag', 'flag', window.FLAGS, '개국'],
+      ['#home-career-n', '.game-card.career', 'career', window.FOOTBALL, '명'],
     ];
-    for (const [nSel, cardSel, data, unit] of counts) {
-      const n = Array.isArray(data) ? data.length : 0;
+    for (const [nSel, cardSel, name, data, unit] of counts) {
+      const n = games[name]?.pool ? games[name].pool() : (Array.isArray(data) ? data.length : 0);
       $(nSel).textContent = n ? (n + unit) : '데이터 없음 — tools/build-data.mjs 실행 필요';
       if (!n) $(cardSel).classList.add('off');
     }

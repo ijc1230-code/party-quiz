@@ -5,13 +5,14 @@
 //  - 음성·사진(ogg/jpg/png)   : 캐시 우선                    -> 한 번 받으면 데이터를 다시 안 씀
 //
 // 이전 버전은 전부 캐시 우선이어서, 프리캐시가 한 번 낡으면 갱신이 안 됐다.
-const CACHE = 'party-quiz-v5';   // v5: 국기 퀴즈 추가
+const CACHE = 'party-quiz-v6';   // v6: 축구 퀴즈 2종 추가
 
 const SHELL = [
   './', './index.html', './credits.html',
   './css/style.css',
-  './js/app.js', './js/lol.js', './js/song.js', './js/person.js', './js/flag.js',
+  './js/app.js', './js/lol.js', './js/song.js', './js/person.js', './js/flag.js', './js/career.js',
   './data/champions.js', './data/songs.js', './data/people.js', './data/flags.js',
+  './data/football.js', './data/clubs.js',
   './manifest.webmanifest',
 ];
 

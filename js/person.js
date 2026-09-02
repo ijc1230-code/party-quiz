@@ -4,7 +4,13 @@
 
   const state = { cats: [], deck: null, cur: null, n: 0, revealed: false };
 
-  const all = () => (Array.isArray(window.PEOPLE) ? window.PEOPLE : []);
+  // 축구 선수는 축구 퀴즈와 명단을 함께 쓴다 (data/football.js)
+  const people = () => (Array.isArray(window.PEOPLE) ? window.PEOPLE : []);
+  const footballers = () => (Array.isArray(window.FOOTBALL) ? window.FOOTBALL : [])
+    .filter((f) => !people().some((p) => p.name === f.ko))   // 손흥민·박지성처럼 겹치면 기존 것을 쓴다
+    .map((f) => ({ name: f.ko, desc: f.desc, category: '축구선수', img: f.img }));
+
+  const all = () => [...people(), ...footballers()];
   const categories = () => [...new Set(all().map((p) => p.category))];
   const pooled = () => (state.cats.includes('전체') || !state.cats.length
     ? all()
@@ -88,6 +94,7 @@
 
   App.register('person', {
     title: '인물 사진 퀴즈',
+    pool: () => all().length,
     enter() { buildCatChips(); updateCount(); },
     key(action) {
       if (action === 'next') { state.revealed ? nextRound() : reveal(); return; }

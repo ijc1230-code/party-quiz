@@ -1,9 +1,15 @@
 # 파티 퀴즈 (웹)
 
-게임 4종: 롤 픽 소리(173) · 노래(83) · 인물 사진(78) · 국기(133)
+게임 5종: 롤 픽 소리(173) · 노래(83) · 인물 사진(133) · 국기(133) · 축구 소속팀(60)
 
-`Desktop\11\games` 의 게임을 GitHub Pages 로 올리기 위한 배포 폴더.
+GitHub Pages 배포 폴더.
 혼자 쓰는 페이지라 검색엔진 색인은 막아 뒀다 (`robots.txt`, `noindex`).
+
+> ⚠️ **원본이 어디인지 주의.**
+> 원래는 `Desktop\11\games` 가 원본이고 `tools/sync-game.mjs` 로 이 폴더에 복사하는 구조였다.
+> 그런데 **축구 퀴즈(사진·소속팀)는 이 저장소에서 직접 만들었다.** 원본 폴더에는 없다.
+> 그러니 지금은 **이 저장소가 원본**이다. 원본 폴더가 있는 PC 에서 `sync-game.mjs` 를 돌리면
+> 이 폴더를 통째로 지우고 덮어써서 축구 퀴즈가 사라진다. 돌리기 전에 원본 폴더로 먼저 합칠 것.
 
 ## 배포
 
@@ -24,12 +30,29 @@ gh api -X POST repos/ijc1230-code/party-quiz/pages -f "source[branch]=main" -f "
 
 ## 게임 내용을 고친 뒤
 
-원본은 `Desktop\11\games` 다. 그쪽을 고치고:
+롤·노래·인물·국기 는 여기 파일을 직접 고치고 커밋하면 된다.
 
 ```bash
-node tools/sync-game.mjs
 git add -A && git commit -m "update" && git push
 ```
+
+## 축구 퀴즈 선수를 바꾸려면
+
+선수 명단은 `tools/football-roster.json` 하나뿐이다. 여기에 이름·영문 위키 문서 제목·난이도를
+적고 스크립트를 돌리면 커리어·클럽 한국어 이름·사진이 자동으로 채워진다.
+
+```bash
+node tools/build-football.mjs              # 명단대로 다시 만든다
+node tools/build-football.mjs --no-photo   # 사진은 그대로 두고 커리어만
+node tools/build-football.mjs --candidates "Son Heung-min"   # 사진 후보 목록
+```
+
+- 커리어는 영문 위키백과 인포박스에서 가져오고 **유스·임대·2군은 자동으로 뺀다**.
+- 사진이 마음에 안 들면 `--candidates` 로 후보를 보고 명단의 `photo` 에 파일명을 적는다.
+  (비워 두면 위키백과 대표 사진을 쓴다.)
+- 위키미디어 공용에 있는 사진만 받는다 — 영문 위키의 비자유 사진은 저장소에 담으면 안 되니까.
+- 클럽 배지는 실제 엠블럼이 아니라 **팀 색 + 이니셜**로 그린다. 엠블럼은 대부분 저작권이 있는
+  상표라 못 쓴다. 유명 팀 색은 스크립트 안 `CLUB_STYLE` 표에 있고, 없는 팀은 이름에서 색을 만든다.
 
 ## 오프라인 동작
 
@@ -53,9 +76,11 @@ git add -A && git commit -m "update" && git push
 
 | 항목 | 설명 |
 |---|---|
-| `index.html` 외 정적 파일 | 게임 본체 (원본에서 복사됨) |
+| `index.html` 외 정적 파일 | 게임 본체 |
 | `sw.js` | 서비스워커 (오프라인 캐시) |
 | `manifest.webmanifest` | 홈 화면 추가 시 앱 이름·아이콘·전체화면 설정 |
 | `.nojekyll` | GitHub Pages 의 Jekyll 처리 비활성화 |
 | `robots.txt` | 검색엔진 색인 차단 |
-| `tools/sync-game.mjs` | 원본 → 이 폴더 복사 |
+| `tools/football-roster.json` | 축구 퀴즈 선수 명단 (손으로 고치는 파일) |
+| `tools/build-football.mjs` | 명단 → `data/football.js`·`data/clubs.js`·`img/football/` |
+| `tools/sync-game.mjs` | 옛 원본 폴더 → 이 폴더 복사 (위 경고 참고) |
